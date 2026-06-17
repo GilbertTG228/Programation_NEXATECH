@@ -1,8 +1,15 @@
-import { cpSync, mkdirSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { cpSync, mkdirSync, writeFileSync, existsSync } from "node:fs";
+import { resolve, dirname } from "node:path";
 import { spawnSync } from "node:child_process";
 
-const root = resolve(import.meta.dirname, "..");
+function findRoot(dir) {
+  if (existsSync(resolve(dir, "pnpm-workspace.yaml"))) return dir;
+  const parent = dirname(dir);
+  if (parent === dir) throw new Error("Could not find project root");
+  return findRoot(parent);
+}
+
+const root = findRoot(process.cwd());
 
 // 1. Build the frontend
 const build = spawnSync("pnpm", ["--filter", "@workspace/nexatech", "run", "build"], {
