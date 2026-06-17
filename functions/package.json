@@ -1,0 +1,26 @@
+{
+  "name": "nexatech-functions",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "cd .. && pnpm --filter @workspace/nexatech run build && cd functions && node build.mjs",
+    "deploy": "cd .. && pnpm --filter @workspace/nexatech run build && cd functions && node build.mjs && firebase deploy --only functions,hosting"
+  },
+  "dependencies": {
+    "firebase-functions": "^6.3.0",
+    "firebase-admin": "^13.2.0",
+    "express": "^5.2.1",
+    "cors": "^2.8.6",
+    "express-session": "^1.19.0",
+    "connect-pg-simple": "^10.0.0",
+    "pino-http": "^10.5.0",
+    "pino": "^9.14.0",
+    "drizzle-orm": "^0.45.2",
+    "pg": "^8.20.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "esbuild": "0.27.3"
+  }
+}

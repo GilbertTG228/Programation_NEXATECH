@@ -6,7 +6,8 @@
     "preinstall": "node -e \"var p=process;if(!/pnpm/.test(p.env.npm_config_user_agent||'')){console.error('Use pnpm instead');p.exit(1)}\"",
     "build": "pnpm run typecheck && pnpm -r --if-present run build",
     "typecheck:libs": "tsc --build",
-    "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
+    "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck",
+    "firebase:deploy": "pnpm --filter @workspace/nexatech run build && cd functions && node build.mjs && cd .. && firebase deploy --only functions,hosting"
   },
   "private": true,
   "devDependencies": {
