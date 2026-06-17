@@ -1,0 +1,581 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: NexaTech Programming Learning Platform API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: users
+    description: User management
+  - name: courses
+    description: Course and lesson management
+  - name: progress
+    description: User progress tracking
+  - name: exercises
+    description: Exercise management and submissions
+
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /users/me:
+    get:
+      operationId: getMe
+      tags: [users]
+      summary: Get current user profile
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+
+    put:
+      operationId: updateMe
+      tags: [users]
+      summary: Update current user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdate"
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /users/me/stats:
+    get:
+      operationId: getMyStats
+      tags: [users]
+      summary: Get current user statistics and progress summary
+      responses:
+        "200":
+          description: User stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserStats"
+
+  /weeks:
+    get:
+      operationId: getWeeks
+      tags: [courses]
+      summary: List all course weeks
+      responses:
+        "200":
+          description: List of weeks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Week"
+
+  /weeks/{weekId}:
+    get:
+      operationId: getWeek
+      tags: [courses]
+      summary: Get a specific week with its lessons
+      parameters:
+        - name: weekId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Week with lessons
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WeekDetail"
+        "404":
+          description: Not found
+
+  /lessons/{lessonId}:
+    get:
+      operationId: getLesson
+      tags: [courses]
+      summary: Get a specific lesson with full content
+      parameters:
+        - name: lessonId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Lesson detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LessonDetail"
+        "404":
+          description: Not found
+
+  /exercises:
+    get:
+      operationId: getExercises
+      tags: [exercises]
+      summary: List exercises, optionally filtered by lesson
+      parameters:
+        - name: lessonId
+          in: query
+          schema:
+            type: integer
+        - name: weekId
+          in: query
+          schema:
+            type: integer
+        - name: difficulty
+          in: query
+          schema:
+            type: string
+            enum: [easy, medium, hard]
+      responses:
+        "200":
+          description: List of exercises
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Exercise"
+
+  /exercises/{exerciseId}:
+    get:
+      operationId: getExercise
+      tags: [exercises]
+      summary: Get a specific exercise
+      parameters:
+        - name: exerciseId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Exercise detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Exercise"
+        "404":
+          description: Not found
+
+  /exercises/{exerciseId}/submit:
+    post:
+      operationId: submitExercise
+      tags: [exercises]
+      summary: Submit an answer for an exercise
+      parameters:
+        - name: exerciseId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExerciseSubmission"
+      responses:
+        "200":
+          description: Submission result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubmissionResult"
+
+  /progress:
+    get:
+      operationId: getProgress
+      tags: [progress]
+      summary: Get current user's full progress
+      responses:
+        "200":
+          description: User progress
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LessonProgress"
+
+  /progress/week/{weekId}:
+    get:
+      operationId: getWeekProgress
+      tags: [progress]
+      summary: Get user progress for a specific week
+      parameters:
+        - name: weekId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Week progress
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WeekProgress"
+
+  /progress/lesson/{lessonId}:
+    put:
+      operationId: markLessonComplete
+      tags: [progress]
+      summary: Mark a lesson as completed
+      parameters:
+        - name: lessonId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LessonProgressUpdate"
+      responses:
+        "200":
+          description: Updated lesson progress
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LessonProgress"
+
+  /leaderboard:
+    get:
+      operationId: getLeaderboard
+      tags: [progress]
+      summary: Get top learners leaderboard
+      responses:
+        "200":
+          description: Leaderboard
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LeaderboardEntry"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    User:
+      type: object
+      required: [id, clerkId, email, createdAt]
+      properties:
+        id:
+          type: integer
+        clerkId:
+          type: string
+        email:
+          type: string
+        firstName:
+          type: ["string", "null"]
+        lastName:
+          type: ["string", "null"]
+        avatarUrl:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    UserUpdate:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+
+    UserStats:
+      type: object
+      required: [totalScore, lessonsCompleted, exercisesCompleted, currentWeek, currentStreak, totalLessons, totalExercises]
+      properties:
+        totalScore:
+          type: integer
+        lessonsCompleted:
+          type: integer
+        exercisesCompleted:
+          type: integer
+        currentWeek:
+          type: integer
+        currentStreak:
+          type: integer
+        totalLessons:
+          type: integer
+        totalExercises:
+          type: integer
+        weeklyProgress:
+          type: array
+          items:
+            $ref: "#/components/schemas/WeekSummary"
+
+    WeekSummary:
+      type: object
+      required: [weekId, weekNumber, title, lessonsCompleted, totalLessons, isUnlocked]
+      properties:
+        weekId:
+          type: integer
+        weekNumber:
+          type: integer
+        title:
+          type: string
+        lessonsCompleted:
+          type: integer
+        totalLessons:
+          type: integer
+        isUnlocked:
+          type: boolean
+
+    Week:
+      type: object
+      required: [id, weekNumber, title, description, objectives, totalLessons]
+      properties:
+        id:
+          type: integer
+        weekNumber:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        objectives:
+          type: array
+          items:
+            type: string
+        totalLessons:
+          type: integer
+        imageUrl:
+          type: ["string", "null"]
+
+    WeekDetail:
+      type: object
+      required: [id, weekNumber, title, description, objectives, lessons]
+      properties:
+        id:
+          type: integer
+        weekNumber:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        objectives:
+          type: array
+          items:
+            type: string
+        imageUrl:
+          type: ["string", "null"]
+        lessons:
+          type: array
+          items:
+            $ref: "#/components/schemas/Lesson"
+
+    Lesson:
+      type: object
+      required: [id, weekId, order, title, description, durationMinutes, type]
+      properties:
+        id:
+          type: integer
+        weekId:
+          type: integer
+        order:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        durationMinutes:
+          type: integer
+        type:
+          type: string
+          enum: [video, reading, exercise, quiz]
+        videoUrl:
+          type: ["string", "null"]
+        imageUrl:
+          type: ["string", "null"]
+
+    LessonDetail:
+      type: object
+      required: [id, weekId, order, title, description, durationMinutes, type, content]
+      properties:
+        id:
+          type: integer
+        weekId:
+          type: integer
+        order:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        durationMinutes:
+          type: integer
+        type:
+          type: string
+          enum: [video, reading, exercise, quiz]
+        videoUrl:
+          type: ["string", "null"]
+        imageUrl:
+          type: ["string", "null"]
+        content:
+          type: string
+        keyPoints:
+          type: array
+          items:
+            type: string
+        exercises:
+          type: array
+          items:
+            $ref: "#/components/schemas/Exercise"
+
+    Exercise:
+      type: object
+      required: [id, lessonId, weekId, order, question, type, difficulty, points]
+      properties:
+        id:
+          type: integer
+        lessonId:
+          type: integer
+        weekId:
+          type: integer
+        order:
+          type: integer
+        question:
+          type: string
+        type:
+          type: string
+          enum: [multiple_choice, true_false, fill_blank, code_completion]
+        difficulty:
+          type: string
+          enum: [easy, medium, hard]
+        points:
+          type: integer
+        options:
+          type: ["array", "null"]
+          items:
+            type: string
+        hint:
+          type: ["string", "null"]
+        explanation:
+          type: ["string", "null"]
+
+    ExerciseSubmission:
+      type: object
+      required: [answer]
+      properties:
+        answer:
+          type: string
+
+    SubmissionResult:
+      type: object
+      required: [correct, pointsEarned, explanation, correctAnswer]
+      properties:
+        correct:
+          type: boolean
+        pointsEarned:
+          type: integer
+        explanation:
+          type: string
+        correctAnswer:
+          type: string
+
+    LessonProgress:
+      type: object
+      required: [lessonId, userId, completed, score]
+      properties:
+        lessonId:
+          type: integer
+        userId:
+          type: integer
+        completed:
+          type: boolean
+        score:
+          type: integer
+        completedAt:
+          type: ["string", "null"]
+        timeSpentMinutes:
+          type: integer
+
+    LessonProgressUpdate:
+      type: object
+      required: [completed]
+      properties:
+        completed:
+          type: boolean
+        timeSpentMinutes:
+          type: integer
+
+    WeekProgress:
+      type: object
+      required: [weekId, lessonsCompleted, totalLessons, totalScore, isCompleted]
+      properties:
+        weekId:
+          type: integer
+        lessonsCompleted:
+          type: integer
+        totalLessons:
+          type: integer
+        totalScore:
+          type: integer
+        isCompleted:
+          type: boolean
+        lessonProgress:
+          type: array
+          items:
+            $ref: "#/components/schemas/LessonProgress"
+
+    LeaderboardEntry:
+      type: object
+      required: [rank, userId, firstName, lastName, totalScore, lessonsCompleted, avatarUrl]
+      properties:
+        rank:
+          type: integer
+        userId:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+        totalScore:
+          type: integer
+        lessonsCompleted:
+          type: integer
+        avatarUrl:
+          type: ["string", "null"]
