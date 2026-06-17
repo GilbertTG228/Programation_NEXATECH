@@ -8,13 +8,7 @@ export default defineConfig(async ({ mode }) => {
   const envDir = path.resolve(import.meta.dirname, "..", "..");
   const env = loadEnv(mode, envDir, "");
 
-  const basePath = env.BASE_PATH || process.env.BASE_PATH;
-
-  if (!basePath) {
-    throw new Error(
-      "BASE_PATH environment variable is required but was not provided.",
-    );
-  }
+  const basePath = env.BASE_PATH || process.env.BASE_PATH || "/";
 
   return {
     envDir,
