@@ -54,7 +54,7 @@ app.use(
 
 app.use("/api", router);
 
-const frontendDist = path.resolve(import.meta.dirname, "..", "..", "nexatech", "dist", "public");
+const frontendDist = path.resolve(import.meta.dirname, "..", "..", "..", "dist");
 app.use(express.static(frontendDist));
 app.get("/{*path}", (_req, res) => {
   res.sendFile(path.join(frontendDist, "index.html"));

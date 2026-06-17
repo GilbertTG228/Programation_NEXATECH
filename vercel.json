@@ -1,6 +1,6 @@
 {
   "buildCommand": "pnpm --filter @workspace/nexatech run build",
-  "outputDirectory": "artifacts/nexatech/dist/public",
+  "outputDirectory": "dist",
   "installCommand": "pnpm install",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
