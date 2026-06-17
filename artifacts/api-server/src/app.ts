@@ -1,7 +1,6 @@
 import express, { type Express } from "express";
 import cors from "cors";
 import path from "node:path";
-// @ts-ignore pino-http v10 types mismatch
 import pinoHttp from "pino-http";
 import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
@@ -12,14 +11,15 @@ const PgStore = connectPgSimple(session);
 
 const app: Express = express();
 
+// @ts-ignore pino-http v10 types mismatch
 app.use(
   pinoHttp({
     logger,
     serializers: {
-      req(req) {
+      req(req: any) {
         return { id: req.id, method: req.method, url: req.url?.split("?")[0] };
       },
-      res(res) {
+      res(res: any) {
         return { statusCode: res.statusCode };
       },
     },
