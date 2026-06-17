@@ -7,7 +7,7 @@
     "build": "pnpm run typecheck && pnpm -r --if-present run build",
     "typecheck:libs": "tsc --build",
     "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck",
-    "firebase:deploy": "pnpm --filter @workspace/nexatech run build && cd functions && node build.mjs && cd .. && firebase deploy --only functions,hosting"
+    "firebase:deploy": "pnpm --filter @workspace/nexatech run build && pnpm --filter @workspace/functions run build && firebase deploy --only functions,hosting"
   },
   "private": true,
   "devDependencies": {
