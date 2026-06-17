@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "cd .. && pnpm --filter @workspace/nexatech run build && cd functions && node build.mjs",
-    "deploy": "cd .. && pnpm --filter @workspace/nexatech run build && cd functions && node build.mjs && firebase deploy --only functions,hosting"
+    "build": "node build.mjs",
+    "deploy": "node build.mjs && firebase deploy --only functions,hosting"
   },
   "dependencies": {
     "firebase-functions": "^6.3.0",
