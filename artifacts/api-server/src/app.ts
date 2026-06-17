@@ -11,9 +11,8 @@ const PgStore = connectPgSimple(session);
 
 const app: Express = express();
 
-// @ts-ignore pino-http v10 types mismatch
 app.use(
-  pinoHttp({
+  (pinoHttp as any)({
     logger,
     serializers: {
       req(req: any) {
