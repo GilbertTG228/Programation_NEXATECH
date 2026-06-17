@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: nexatech-api
+    runtime: node
+    plan: free
+    buildCommand: pnpm install && pnpm --filter @workspace/nexatech run build && pnpm --filter @workspace/api-server run build
+    startCommand: cd artifacts/api-server && node --enable-source-maps dist/entry.mjs
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: BASE_PATH
+        value: /
+      - key: SESSION_SECRET
+        value: nexatech-secret-fallback
+      - key: ADMIN_PASSWORD
+        value: Gilbert@228
+      - key: DATABASE_URL
+        sync: false
