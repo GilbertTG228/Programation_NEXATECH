@@ -1,7 +1,5 @@
 {
-  "framework": "vite",
-  "buildCommand": "pnpm --filter @workspace/nexatech run build",
-  "outputDirectory": "dist",
+  "buildCommand": "node scripts/vercel-build.mjs",
   "installCommand": "pnpm install",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
