@@ -1,5 +1,4 @@
 {
-  "framework": "vite",
   "buildCommand": "pnpm --filter @workspace/nexatech run build",
   "outputDirectory": "artifacts/nexatech/dist/public",
   "installCommand": "pnpm install",
